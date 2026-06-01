@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 # === НАСТРОЙКИ ПРИЛОЖЕНИЯ ===
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,8 +12,9 @@ ALERTS_DIR = os.path.join(script_dir, "alerts")                                 
 ALERT_IMG_PATH = os.path.normpath(os.path.join(script_dir, "alerts", "alert.jpg"))      # strange photo default name
 
 # === НАСТРОЙКИ ТЕЛЕГРАМА ===
-BOT_TOKEN = "ТОКЕН_БОТА"
-CHAT_ID = "ЛИЧНЫЙ_CHAT_ID"
+load_dotenv()
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("MY_CHAT_ID")
 
 # === НАСТРОЙКИ СЕТЕВОГО МОСТА ===
 LISTEN_PORT = 5006

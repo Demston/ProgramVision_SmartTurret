@@ -3,28 +3,28 @@ import cv2
 import time
 import os
 from deepface import DeepFace
-
 from config import *
 
 
 def is_valid_folder_name(name: str) -> bool:
-    """Проверка на запрещенку"""
+    """Проверка на запрещенку и кириллицу"""
     if not name or name.strip() == '':
         return False
-    forbidden_chars = re.compile(r'[<>:"/\\|?*]')
+    forbidden_chars = re.compile(r'[<>:"/\\|?*а-яА-ЯёЁ\s]')
     return not bool(forbidden_chars.search(name))
 
 
 def photo_session():
     """Фотосессия"""
 
-    person_name = input("Введи своё имя: ")
+    person_name = input("Введи своё имя на английском: ")
+    save_dir = os.path.join(script_dir, 'dataset', person_name)
+
     if is_valid_folder_name(person_name):
-        save_dir = os.path.join(script_dir, 'dataset', person_name)
         os.makedirs(save_dir, exist_ok=True)
     else:
         print("Ты ввёл имя с недопустимыми символами")
-        exit()
+        return
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
@@ -86,3 +86,6 @@ def photo_session():
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+photo_session()

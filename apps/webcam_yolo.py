@@ -20,6 +20,7 @@ DEADZONE = 40
 # Таймер защиты от спама
 unknown_start_time = None
 alert_sent = False
+turret_start_time = time.time()
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -76,7 +77,7 @@ while cap.isOpened():
                 unknown_start_time = time.time()  # Засекаем время появления чужака
 
             # Если чужак находится в кадре непрерывно больше N секунд и сигнал еще не слали
-            elif time.time() - unknown_start_time >= 3.0 and not alert_sent:
+            elif time.time() - unknown_start_time >= 3.0 and not alert_sent and (time.time() - turret_start_time > 5.0):
                 cv2.imwrite(ALERT_IMG_PATH, frame)  # Сохраняем текущий кадр на диск
                 send_alert_signal()  # Пинаем бота по сети через наш новый модуль
                 alert_sent = True    # Сбрасываем флаг
