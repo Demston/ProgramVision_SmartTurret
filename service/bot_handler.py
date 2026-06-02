@@ -2,12 +2,13 @@ import os
 import socket
 from datetime import datetime
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from service.logger_config import logger, sec_logger
 from config import *
 
 
 def network_listener(our_bot):
     """Работает в фоне. Слушает порт 5006"""
-    print(f"[BOT NET] Сетевой мост запущен. Слушаем порт {LISTEN_PORT}...")
+    logger.info(f"[BOT NET] Сетевой мост запущен. Слушаем порт {LISTEN_PORT}...")
 
     bot = our_bot
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -19,21 +20,21 @@ def network_listener(our_bot):
             signal = data.decode('utf-8')
 
             if signal == "NEW_ALERT":
-                print("[BOT NET] Получен сигнал тревоги от турели! Отправляю фото нарушителя...")
+                logger.error("[BOT NET] Получен сигнал тревоги от турели! Отправляю фото нарушителя...")
                 send_security_alert(bot)
         except Exception as e:
-            print(f"[BOT NET ERROR] Ошибка сокета: {e}")
+            logger.error(f"[BOT NET] Критический сбой: {e}")
 
 
 def send_security_alert(bot):
-    """ОТПРАВКА ФОТО И КНОПОК В ТЕЛЕГРАМ"""
+    """Отправка фото и кнопок в ТГ"""
     try:
         if os.path.exists(ALERT_IMG_PATH):
             with open(ALERT_IMG_PATH, 'rb') as f:
                 photo = f.read()  # Файл прочитан и больше не занят ОС Windows
             # Создаем интерактивные кнопки под фото
             markup = InlineKeyboardMarkup()
-            btn_allow = InlineKeyboardButton("💚 Доверить", callback_data="cmd_allow")
+            btn_allow = InlineKeyboardButton("🟢 ДОВЕРИТЬ", callback_data="cmd_allow")
             btn_fire = InlineKeyboardButton("🔴 АТАКОВАТЬ", callback_data="cmd_fire")
             markup.row(btn_allow, btn_fire)
 
@@ -43,15 +44,15 @@ def send_security_alert(bot):
                 caption="🚨 ВНИМАНИЕ! Обнаружен неопознанный объект периметра!",
                 reply_markup=markup
             )
-            print("[BOT HANDLER] Фото успешно отправлено в Telegram.")
+            logger.info("[BOT] Фото успешно отправлено в Telegram.")
 
             # формируем архивное имя по дате и времени
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             archive_filename = f"alert_{timestamp}.jpg"
             archive_path = os.path.join(ALERTS_DIR, archive_filename)  # Полный путь для архивной фотки
             os.rename(ALERT_IMG_PATH, archive_path)         # Переименовываем временный файл в архивный
-            print(f"[BOT HANDLER] Файл перенесен в архив: {archive_path}")
+            logger.info(f"[BOT] Файл перенесен в архив: {archive_path}")
         else:
-            print(f"[BOT ERROR] Файл {ALERT_IMG_PATH} не найден на диске!")
+            logger.error(f"[BOT] Файл {ALERT_IMG_PATH} не найден на диске!")
     except Exception as e:
-        print(f"[BOT ERROR] Не удалось отправить сообщение в ТГ: {e}")
+        logger.error(f"[BOT] Не удалось отправить сообщение в ТГ: {e}")

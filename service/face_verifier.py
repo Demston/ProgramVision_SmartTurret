@@ -1,6 +1,8 @@
 import os
 import threading
 from deepface import DeepFace
+from service.logger_config import logger, sec_logger
+
 
 current_user = "UNKNOWN"  # Здесь храним имя распознанного
 lock = threading.Lock()
@@ -23,7 +25,7 @@ def _async_worker(person_crop, db_path):
             df = dfs[0]  # Берем первый датафрейм из списка результатов
             if not df.empty:  # Проверяем, есть ли там хоть одна строка с совпадением
                 matched_file_path = df['identity'].values[0]  # Вытаскиваем путь к самой первой совпавшей фотке из базы
-                # Магия os.path: берем имя папки, в которой лежит этот файл (получим "Bruce")
+                # Магия os.path: берем имя папки, в которой лежит этот файл (получим "Dima")
                 match_name = os.path.basename(os.path.dirname(matched_file_path))
 
         with lock:
@@ -38,7 +40,7 @@ def _async_worker(person_crop, db_path):
 
     except Exception as e:
         # Выводим ошибку в консоль, если она вдруг случится
-        # print(f"[ERROR] Ошибка биометрии: {e}")
+        logger.error(f"[TURRET SYSTEM] Сбой биометрии: {e}")
         with lock:
             miss_counter += 1
             if miss_counter >= MAX_MISSES:

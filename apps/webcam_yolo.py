@@ -1,113 +1,137 @@
 import cv2
+import time
 from ultralytics import YOLO
 from config import *
 from service.face_verifier import verify_face_async
-from service.net_bridge import send_alert_signal
-import time
+from service.net_bridge import send_alert_signal, start_turret_listener, get_turret_state
+from service.logger_config import logger, sec_logger
 
 
 # Загружаем модель (nano-версия — самая быстрая)
 model = YOLO(yolo8n_model)
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)       # Индекс камеры!
 
-# Узнаем центр кадра
-WIDTH = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-HEIGHT = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-CENTER_X, CENTER_Y = WIDTH // 2, HEIGHT // 2
-# "Мертвая зона" в пикселях (чтобы мотор не дрожал в центре)
-DEADZONE = 40
 
-# Таймер защиты от спама
-unknown_start_time = None
-alert_sent = False
-turret_start_time = time.time()
+def turret_vision():
+    """Основная функция работы зрения турели"""
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)       # Индекс камеры!
+    # Узнаем центр кадра
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    center_x, center_y = width // 2, height // 2
+    # "Мертвая зона" в пикселях (чтобы мотор не дрожал в центре)
+    deadzone = 40
 
-    # Магия: распознавание и отрисовка одной строкой
-    results = model.predict(frame, verbose=False, stream=True)
-    best_target = None
-    min_distance = float('inf')  # Начальное расстояние — бесконечность
+    # Таймер защиты от спама
+    unknown_start_time = None
+    alert_sent = False
+    turret_start_time = time.time()
 
-    for r in results:
-        for box in r.boxes:
-            # Получаем ID класса (0 - это всегда человек в YOLO) без индексов [0]
-            cls = int(box.cls)
-            if cls == 0:  # Человек
-                # Координаты рамки — убрали лишний [0], чтобы код не падал
-                x1, y1, x2, y2 = map(int, box.xyxy.cpu().numpy()[0])
+    start_turret_listener()   # запускаем фоновый поток сетевого слушателя из модуля
 
-                # Точка прицеливания (центр объекта)
-                target_x = x1 + (x2 - x1) // 2
-                target_y = y1 + (y2 - y1) // 3  # Целимся в торс
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-                # Считаем расстояние от центра экрана до этой цели (гипотенуза)
-                dist = ((target_x - CENTER_X) ** 2 + (target_y - CENTER_Y) ** 2) ** 0.5
+        # Магия: распознавание и отрисовка одной строкой
+        results = model.predict(frame, verbose=False, stream=True)
+        best_target = None
+        min_distance = float('inf')  # Начальное расстояние — бесконечность
 
-                # Если этот человек ближе к центру, чем предыдущий — запоминаем его
-                if dist < min_distance:
-                    min_distance = dist
-                    best_target = (x1, y1, x2, y2, target_x, target_y)
+        for r in results:
+            for box in r.boxes:
+                # Получаем ID класса (0 - это всегда человек в YOLO) без индексов [0]
+                cls = int(box.cls)
+                if cls == 0:  # Человек
+                    # Координаты рамки — убрали лишний [0], чтобы код не падал
+                    x1, y1, x2, y2 = map(int, box.xyxy.cpu().numpy()[0])
 
-    # ОТРИСОВКА (только для одного лучшего кандидата)
-    if best_target:
-        x1, y1, x2, y2, target_x, target_y = best_target
-        # Вычисляем ошибку (смещение от центра экрана)
-        error_x = target_x - CENTER_X
-        error_y = target_y - CENTER_Y
+                    # Точка прицеливания (центр объекта)
+                    target_x = x1 + (x2 - x1) // 2
+                    target_y = y1 + (y2 - y1) // 3  # Целимся в торс
 
-        # Вызываем асинхронную проверку. Работает мгновенно в фоне.
-        user_name = verify_face_async(frame, (x1, y1, x2, y2), DB_PATH)
+                    # Считаем расстояние от центра экрана до этой цели (гипотенуза)
+                    dist = ((target_x - center_x) ** 2 + (target_y - center_y) ** 2) ** 0.5
 
-        if user_name != "UNKNOWN" and user_name:
-            color = (0, 255, 0)  # Зеленый — Свой
-            label = f"OWNER: {user_name.upper()} (ACCESS GRANTED)"
+                    # Если этот человек ближе к центру, чем предыдущий — запоминаем его
+                    if dist < min_distance:
+                        min_distance = dist
+                        best_target = (x1, y1, x2, y2, target_x, target_y)
+
+        # ОТРИСОВКА (только для одного лучшего кандидата)
+        if best_target:
+            x1, y1, x2, y2, target_x, target_y = best_target
+            # Вычисляем ошибку (смещение от центра экрана)
+            error_x = target_x - center_x
+            error_y = target_y - center_y
+
+            # Вызываем асинхронную проверку. Работает мгновенно в фоне.
+            user_name = verify_face_async(frame, (x1, y1, x2, y2), DB_PATH)
+
+            if user_name != "UNKNOWN" and user_name:
+                color = (0, 255, 0)  # Зеленый — Свой
+                label = f"OWNER: {user_name.upper()} (ACCESS GRANTED)"
+                unknown_start_time = None
+                alert_sent = False
+
+            else:
+                color = (0, 0, 255)  # Красный — Чужой
+                label = "UNKNOWN: TARGET LOCKED"
+
+                # === ЛОГИКА ТАЙМЕРА ТРЕВОГИ И СЕТЕВОГО МОСТА ===
+                if unknown_start_time is None:
+                    unknown_start_time = time.time()  # Засекаем время появления чужака
+
+                # Если чужак находится в кадре непрерывно больше N секунд и сигнал еще не слали
+                elif time.time() - unknown_start_time >= 3.0 and not alert_sent and (time.time() - turret_start_time > 5.0):
+                    cv2.imwrite(ALERT_IMG_PATH, frame)  # Сохраняем текущий кадр на диск
+                    send_alert_signal()  # Пинаем бота по сети через наш новый модуль
+                    alert_sent = True    # Сбрасываем флаг
+
+                if abs(error_x) > deadzone:
+                    cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
+                    cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+
+                # Логика для будущего железа. Робот целится и выдает команды ТОЛЬКО если перед ним чужак
+                if abs(error_x) > deadzone:
+                    cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
+                    cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+
+            # Отрисовка элементов прицела
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)  # Рамка вокруг цели
+            cv2.circle(frame, (target_x, target_y), 5, color, -1)  # Точка в центре цели
+            cv2.line(frame, (center_x, center_y), (target_x, target_y), color, 2)  # Линия наведения
+            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+        else:
+            # Если распозазнных людей в кадре нет — статус сбрасывается
+            user_name = "UNKNOWN"
             unknown_start_time = None
             alert_sent = False
 
-        else:
-            color = (0, 0, 255)  # Красный — Чужой
-            label = "UNKNOWN: TARGET LOCKED"
+        turret_net_state = get_turret_state()
 
-            # === ЛОГИКА ТАЙМЕРА ТРЕВОГИ И СЕТЕВОГО МОСТА ===
-            if unknown_start_time is None:
-                unknown_start_time = time.time()  # Засекаем время появления чужака
+        if turret_net_state == "CHAOS_FIRE":
+            # Режим жесткой атаки. В будущем: шлем по UDP на ESP32 команду включить реле!
+            # В этом режиме турель игнорирует deadzone и лупит стробоскопом на полную.
+            cv2.putText(frame, "STATUS: Telegram FIRE ACTIVE!", (20, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            # Заменим старый print() на новый логгер, когда подключим logger_config.py
+            logger.warning("[TURRET SYSTEM] РЕЖИМ АТАКИ АКТИВЕН: Имитация подачи 5V на реле гирбокса...")
 
-            # Если чужак находится в кадре непрерывно больше N секунд и сигнал еще не слали
-            elif time.time() - unknown_start_time >= 3.0 and not alert_sent and (time.time() - turret_start_time > 5.0):
-                cv2.imwrite(ALERT_IMG_PATH, frame)  # Сохраняем текущий кадр на диск
-                send_alert_signal()  # Пинаем бота по сети через наш новый модуль
-                alert_sent = True    # Сбрасываем флаг
+        elif turret_net_state == "ALLOW_GUEST":
+            # Режим удаленного доверия. В будущем: принудительно заставляем турель
+            # сбросить координаты моторов в центр (0,0) и перестать вести цель.
+            cv2.putText(frame, "STATUS: GUEST ALLOWED BY USER", (20, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            logger.warning("[TURRET SYSTEM] ЦЕЛЬ ДОВЕРЕНА: Команды на наведение заблокированы удаленно.")
 
-            if abs(error_x) > DEADZONE:
-                cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
-                cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+        # Статичный прицел центра экрана
+        cv2.drawMarker(frame, (center_x, center_y), (255, 255, 255), cv2.MARKER_CROSS, 20, 2)
+        cv2.imshow("Auto AIM", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-            # Логика для будущего железа. Робот целится и выдает команды ТОЛЬКО если перед ним чужак
-            if abs(error_x) > DEADZONE:
-                cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
-                cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-
-        # Отрисовка элементов прицела
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)  # Рамка вокруг цели
-        cv2.circle(frame, (target_x, target_y), 5, color, -1)  # Точка в центре цели
-        cv2.line(frame, (CENTER_X, CENTER_Y), (target_x, target_y), color, 2)  # Линия наведения
-        cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-
-    else:
-        # Если распозазнных людей в кадре нет — статус сбрасывается
-        user_name = "UNKNOWN"
-        unknown_start_time = None
-        alert_sent = False
-
-    # Статичный прицел центра экрана
-    cv2.drawMarker(frame, (CENTER_X, CENTER_Y), (255, 255, 255), cv2.MARKER_CROSS, 20, 2)
-    cv2.imshow("Auto AIM", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()

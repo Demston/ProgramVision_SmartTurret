@@ -1,10 +1,13 @@
 gitignore
 
 # Project
+_beta/
 dataset/*
 alerts/*
+logs/*
 !dataset/.gitkeep
 !alerts/.gitkeep
+!logs/.gitkeep
 
 # Byte code
 __pycache__/

@@ -1,9 +1,10 @@
 import re
+import os
 import cv2
 import time
-import os
 from deepface import DeepFace
 from config import *
+from service.logger_config import logger, sec_logger
 
 
 def is_valid_folder_name(name: str) -> bool:
@@ -23,7 +24,7 @@ def photo_session():
     if is_valid_folder_name(person_name):
         os.makedirs(save_dir, exist_ok=True)
     else:
-        print("Ты ввёл имя с недопустимыми символами")
+        print("Ты ввёл имя с недопустимыми символами!")
         return
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -53,7 +54,7 @@ def photo_session():
             flash_active = False  # Сразу выключаем, чтобы мигнуло только на 1 кадр
         else:
             display_frame = frame.copy()
-            # ИСПРАВЛЕНО: Текст на английском, чтобы шрифт OpenCV его отобразил
+            # Текст на английском, чтобы шрифт OpenCV его отобразил!
             cv2.putText(display_frame, f'LOOK AT THE CAMERA! {photo_count}/{total_photos}', (20, 40),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
@@ -71,14 +72,14 @@ def photo_session():
 
                 photo_path = os.path.join(save_dir, f"face_{photo_count}.jpg")
                 cv2.imwrite(photo_path, face_img)
-                print(f"[SUCCESS] Сохранено: {photo_path}")
+                logger.info(f"[DATASET] Сохранено фото: {photo_path}")
 
                 photo_count += 1
                 flash_active = True  # Включаем вспышку для следующего кадра
 
         # АВТОВЫХОД: Если набрали нужное количество фото — завершаем сессию
         if photo_count >= total_photos:
-            print(f"\n[SYSTEM] База для {person_name} успешно создана! Закрываемся...")
+            logger.info(f"\n[DATASET] База для {person_name} успешно создана!")
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -88,4 +89,4 @@ def photo_session():
     cv2.destroyAllWindows()
 
 
-photo_session()
+# photo_session()

@@ -11,6 +11,11 @@ DB_PATH = os.path.join(script_dir, "dataset")                                   
 ALERTS_DIR = os.path.join(script_dir, "alerts")                                         # strange photo path
 ALERT_IMG_PATH = os.path.normpath(os.path.join(script_dir, "alerts", "alert.jpg"))      # strange photo default name
 
+# === ПУТИ К ЛОГАМ ===
+LOGS_DIR = os.path.join(script_dir, "logs")
+SECURITY_LOG = os.path.join(LOGS_DIR, "security_alerts.log")
+SYSTEM_LOG = os.path.join(LOGS_DIR, "system_runtime.log")
+
 # === НАСТРОЙКИ ТЕЛЕГРАМА ===
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -18,4 +23,5 @@ CHAT_ID = os.getenv("MY_CHAT_ID")
 
 # === НАСТРОЙКИ СЕТЕВОГО МОСТА ===
 LISTEN_PORT = 5006
+TURRET_PORT = 5007
 LOCALHOST = "127.0.0.1"
