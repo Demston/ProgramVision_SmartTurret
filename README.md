@@ -1,10 +1,10 @@
-# 🤖 Cyberdyne Perimeter Security System: "Smart Turret" Core
+# 🤖 Perimeter Security System: "Smart Turret" Core
 
 [ENGLISH VERSION](#english-version) | [РУССКАЯ ВЕРСИЯ](#русская-версия)
 
 ---
 
-## ENGLISH VERSION
+## [EN/US]
 
 An asynchronous, distributed AI-powered security complex that locks onto human targets, performs biometric authentication in a background thread, and provides real-time remote control via an interactive Telegram Bot. Equipped with a unified console menu interface and infrastructure auto-tests.
 
@@ -62,7 +62,7 @@ Acts as the security command center. It listens to inbound network packets on Po
 
 ---
 
-## РУССКАЯ ВЕРСИЯ
+## [RU]
 
 Асинхронный распределенный охранный комплекс на базе искусственного интеллекта. Система автоматически захватывает цели, проводит биометрическую верификацию лиц в фоновом потоке и предоставляет интерфейс удаленного управления через интерактивного Telegram-бота. Снабжена удобным консольным меню и автотестами инфраструктуры.
 
