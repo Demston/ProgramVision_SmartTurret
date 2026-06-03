@@ -1,6 +1,6 @@
 # 🤖 Perimeter Security System: "Smart Turret" Core
 
-[ENGLISH VERSION](#english-version) | [РУССКАЯ ВЕРСИЯ](#русская-версия)
+[ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru)
 
 ---
 
