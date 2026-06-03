@@ -1,33 +1,37 @@
 """Программа охраны периметра <<Умная Турель>>"""
 
-from apps.trainer import photo_session
+from apps.trainer import show_dataset_dirs, photo_session
 from apps.webcam_yolo import turret_vision
 
 
 if __name__ == '__main__':
+
+    print("\n" + "=" * 60)
+    print("ПРИВЕТСТВУЮ! Это программа охраны периметра <<Умная Турель>>")
+    print("=" * 60)
+
     while True:
-        print("\n" + "=" * 60)
-        print("ПРИВЕТСТВУЮ! Это программа охраны периметра <<Умная Турель>>")
-        print("=" * 60)
-        print("Выбери один из пунктов:\n")
+        print("\nВыбери один из пунктов:")
 
         command = input(
-            "1 - Обучить модель. Фотосессия перед веб-камерой.\n"
-            "2 - Начать работу турели. Боевой режим, съёмка периметра.\n"
-            "3 - Выход.\n\n"
+            "1 - Начать работу турели. Боевой режим, съёмка периметра.\n"
+            "2 - Обучить модель. Фотосессия перед веб-камерой.\n"
+            "3 - Показать список доверенных лиц.\n"
+            "4 - Выход.\n\n"
             "Введи цифру: "
         )
 
         if command == '1':
-            photo_session()
-        elif command == '2':
-            print("\n" + "!" * 40)
-            print("НАПОМИНАНИЕ!")
-            print("Выход из камеры осуществляется по кнопке 'Q' (англ. раскладка)")
-            print("ТГ-бот запускается отдельным процессом:  python apps/bot_service.py")
-            print("!" * 40 + "\n")
+            print("\n" + "!" * 70)
+            print("• Выключение турели осуществляется по кнопке 'Q' (англ. раскладка)")
+            print("• ТГ-бот запускается отдельным процессом:  python apps/bot_service.py")
+            print("!" * 70 + "\n")
             turret_vision()
+        elif command == '2':
+            photo_session()
         elif command == '3':
+            show_dataset_dirs()
+        elif command == '4':
             print("\nЗавершение работы программы. До связи!")
             break
         else:

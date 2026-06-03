@@ -7,6 +7,17 @@ from config import *
 from service.logger_config import logger, sec_logger
 
 
+def show_dataset_dirs():
+    """Вывести на экран папки с именами из датасета"""
+    print("\nСписок доверенных лиц:")
+    folders = [item for item in os.listdir(DB_PATH) if os.path.isdir(os.path.join(DB_PATH, item))]
+    if folders:
+        for folder in folders:
+            print(folder)
+    else:
+        print("В настоящее время список пуст.")
+
+
 def is_valid_folder_name(name: str) -> bool:
     """Проверка на запрещенку и кириллицу"""
     if not name or name.strip() == '':

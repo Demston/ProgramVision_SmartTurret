@@ -3,6 +3,7 @@ import sys
 import socket
 import unittest
 from dotenv import load_dotenv
+
 # Прокидываем пути, чтобы тесты видели модули из папки apps и service
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from apps.trainer import is_valid_folder_name
@@ -24,10 +25,10 @@ class TestTurretSoftware(unittest.TestCase):
 
     def test_invalid_folder_names_special_chars(self):
         """Тестируем блокировку запрещенных символов Windows и пробелов"""
-        self.assertFalse(is_valid_folder_name("Dima/Guest"))    # Знак запрещен
-        self.assertFalse(is_valid_folder_name("Connor?"))       # Знак запрещен
-        self.assertFalse(is_valid_folder_name("Dima Name"))     # Пробел запрещен
-        self.assertFalse(is_valid_folder_name(""))              # Пустая строка
+        self.assertFalse(is_valid_folder_name("Dima/Guest"))  # Знак запрещен
+        self.assertFalse(is_valid_folder_name("Connor?"))  # Знак запрещен
+        self.assertFalse(is_valid_folder_name("Dima Name"))  # Пробел запрещен
+        self.assertFalse(is_valid_folder_name(""))  # Пустая строка
 
     def test_dataset_directory_exists(self):
         """Проверяем, что критически важная папка dataset существует в корне проекта"""
@@ -52,7 +53,7 @@ class TestTurretSoftware(unittest.TestCase):
 
     def test_env_config_and_token(self):
         """Проверяем, что файл .env на месте, а токен Telegram-бота подгрузился"""
-        load_dotenv()   # Подгружаем .env
+        load_dotenv()  # Подгружаем .env
         bot_token = os.getenv("BOT_TOKEN")
         self.assertIsNotNone(bot_token, "Критическая ошибка: Переменная BOT_TOKEN не найдена в файле .env!")
         self.assertNotEqual(bot_token, "", "Ошибка: Токен бота в .env файле пустой!")
