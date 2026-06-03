@@ -121,7 +121,7 @@ Acts as the security command center. It listens to inbound network packets on Po
 ---
 
 <div align="center">
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="480"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/screenshots/Auto%20AIM%2003.06.2026%2020_26_20.png" width="480"/>
+<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="360"/>
+<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/screenshots/Auto%20AIM%2003.06.2026%2020_26_20.png" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/screenshots/IMG_20260603_202952.jpg" width="320"/>
 </div>
