@@ -52,9 +52,8 @@ class TestTurretSoftware(unittest.TestCase):
 
     def test_env_config_and_token(self):
         """Проверяем, что файл .env на месте, а токен Telegram-бота подгрузился"""
-        # Подгружаем .env
-        load_dotenv()
-        bot_token = os.getenv("BOT_TOKEN")  # Замени на имя своей переменной из .env
+        load_dotenv()   # Подгружаем .env
+        bot_token = os.getenv("BOT_TOKEN")
         self.assertIsNotNone(bot_token, "Критическая ошибка: Переменная BOT_TOKEN не найдена в файле .env!")
         self.assertNotEqual(bot_token, "", "Ошибка: Токен бота в .env файле пустой!")
 
