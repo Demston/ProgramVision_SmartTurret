@@ -2,6 +2,7 @@ import threading
 import telebot
 from service.bot_handler import network_listener
 from service.logger_config import logger, sec_logger
+from config import BOT_TOKEN
 
 
 bot = telebot.TeleBot(BOT_TOKEN)    # Create a bot

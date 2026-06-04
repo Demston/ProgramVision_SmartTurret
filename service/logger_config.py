@@ -1,6 +1,6 @@
 import logging
 import os
-from config import LOGS_DIR
+from config import LOGS_DIR, SYSTEM_LOG, SECURITY_LOG
 
 os.makedirs(LOGS_DIR, exist_ok=True)
 
@@ -40,7 +40,7 @@ def setup_logger():
     security_file_handler.setFormatter(log_format)
     security_logger.addHandler(security_file_handler)
 
-    # Adding alert output to the console so you can see them on your screen.
+    # Adding alert output to the console, so you can see them on your screen.
     security_logger.addHandler(console_handler)
 
 

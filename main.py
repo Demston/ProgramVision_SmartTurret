@@ -17,7 +17,7 @@ if __name__ == '__main__':
             "1 - Start turret operation. Combat mode, perimeter survey.\n"
             "2 - Train a model. Photo session in front of a webcam.\n"
             "3 - Show list of trusted persons.\n"
-            "4 - Exit.\n\n"
+            "4 - Exit\n\n"
             "Enter the number: "
         )
 
