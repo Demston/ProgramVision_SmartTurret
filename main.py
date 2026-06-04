@@ -1,4 +1,4 @@
-"""Программа охраны периметра <<Умная Турель>>"""
+"""Perimeter Security System: <<Smart Turret>>"""
 
 from apps.trainer import show_dataset_dirs, photo_session
 from apps.webcam_yolo import turret_vision
@@ -7,24 +7,24 @@ from apps.webcam_yolo import turret_vision
 if __name__ == '__main__':
 
     print("\n" + "=" * 60)
-    print("ПРИВЕТСТВУЮ! Это программа охраны периметра <<Умная Турель>>")
+    print("HI! This is a perimeter security program. <<Smart Turret>>")
     print("=" * 60)
 
     while True:
-        print("\nВыбери один из пунктов:")
+        print("\nSelect one of the items:")
 
         command = input(
-            "1 - Начать работу турели. Боевой режим, съёмка периметра.\n"
-            "2 - Обучить модель. Фотосессия перед веб-камерой.\n"
-            "3 - Показать список доверенных лиц.\n"
-            "4 - Выход.\n\n"
-            "Введи цифру: "
+            "1 - Start turret operation. Combat mode, perimeter survey.\n"
+            "2 - Train a model. Photo session in front of a webcam.\n"
+            "3 - Show list of trusted persons.\n"
+            "4 - Exit.\n\n"
+            "Enter the number: "
         )
 
         if command == '1':
             print("\n" + "!" * 70)
-            print("• Выключение турели осуществляется по кнопке 'Q' (англ. раскладка)")
-            print("• ТГ-бот запускается отдельным процессом:  python apps/bot_service.py")
+            print("• The turret can be turned off by pressing the 'Q' key")
+            print("• The TG bot is launched as a separate process:  python apps/bot_service.py")
             print("!" * 70 + "\n")
             turret_vision()
         elif command == '2':
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         elif command == '3':
             show_dataset_dirs()
         elif command == '4':
-            print("\nЗавершение работы программы. До связи!")
+            print("\nProgram shutdown. Bye!")
             break
         else:
-            print("\n[ERROR] Команда не распознана. Попробуй еще раз.")
+            print("\n[ERROR] Command not recognized. Try again.")

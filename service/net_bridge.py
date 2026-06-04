@@ -1,34 +1,34 @@
 import socket
 import threading
-from config import *
+from config import LOCALHOST, LISTEN_PORT, TURRET_PORT
 from service.logger_config import logger, sec_logger
 
 
-# Глобальное состояние режима турели от TG внутри процесса турели
-# Может быть: "GUARD" (обычный), "ALLOW_GUEST" (пропустить), "CHAOS_FIRE" (атака)
+# Global turret mode state from TG within the turret process
+# Can be: "GUARD" (normal), "ALLOW_GUEST" (skip), "CHAOS_FIRE" (attack)
 _current_state = "GUARD"
 _state_lock = threading.Lock()
 
 
 def send_alert_signal():
-    """Отправляет быстрый сетевой сигнал боту, что появился новый нарушитель"""
+    """Sends a quick network signal to the bot that a new intruder has appeared."""
     try:
-        # Создаем быстрый UDP сокет
+        # Create a fast UDP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(b"NEW_ALERT", (LOCALHOST, LISTEN_PORT))
         sock.close()
-        logger.warning("[NET] Сигнал NEW_ALERT успешно отправлен боту по сети.")
+        logger.warning("[NET] The NEW_ALERT signal was successfully sent to the bot over the network.")
     except Exception as e:
-        logger.error(f"[NET] Не удалось отправить сигнал боту: {e}")
+        logger.error(f"[NET] Failed to send signal to bot: {e}")
 
 
 def _network_worker():
-    """Внутренний воркер, который бесконечно слушает порт 5007"""
+    """An internal worker that listens endlessly on port 5007"""
     global _current_state
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((LOCALHOST, TURRET_PORT))
-    logger.info(f"[NET] Слушатель турели запущен на порту {TURRET_PORT}...")
+    logger.info(f"[NET] Turret listener launched on port {TURRET_PORT}...")
 
     while True:
         try:
@@ -38,33 +38,33 @@ def _network_worker():
             with _state_lock:
                 if command == "ALLOW":
                     _current_state = "ALLOW_GUEST"
-                    logger.warning("[NET] Получена команда: ДОВЕРИТЬ. Турель игнорирует цель.")
+                    logger.warning("[NET] Received command: TRUST. Turret ignores target.")
                 elif command == "FIRE":
                     _current_state = "CHAOS_FIRE"
-                    logger.warning("[NET] Получена команда: АТАКОВАТЬ! Включаем периферию.")
+                    logger.warning("[NET] Command received: ATTACK! Activating peripherals.")
 
         except Exception as e:
-            logger.error(f"[NET] Ошибка сокета слушателя: {e}")
+            logger.error(f"[NET] Listener socket error: {e}")
 
 
 def start_turret_listener():
-    """Запускает фоновый поток прослушки портов от ТГ-бота"""
+    """Starts a background thread listening to ports from a TG bot."""
     t = threading.Thread(target=_network_worker, daemon=True)
     t.start()
 
 
 def get_turret_state() -> str:
-    """Возвращает текущий режим, прилетевший из Telegram"""
+    """Returns the current mode received from Telegram."""
     with _state_lock:
         return _current_state
 
 
 def send_command_to_turret(command: str):
-    """Бот шлет текстовую команду (ALLOW / FIRE) обратно в турель"""
+    """The bot sends a text command (ALLOW / FIRE) back to the turret"""
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(command.encode('utf-8'), (LOCALHOST, TURRET_PORT))
         sock.close()
-        logger.warning(f"[NET] Команда {command} отправлена на турель.")
+        logger.warning(f"[NET] Command {command} sent to turret.")
     except Exception as e:
-        logger.error(f"[NET] Не удалось отправить команду на турель: {e}")
+        logger.error(f"[NET] Failed to send command to turret: {e}")

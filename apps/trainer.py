@@ -3,23 +3,23 @@ import os
 import cv2
 import time
 from deepface import DeepFace
-from config import *
+from config import DB_PATH
 from service.logger_config import logger, sec_logger
 
 
 def show_dataset_dirs():
-    """Вывести на экран папки с именами из датасета"""
-    print("\nСписок доверенных лиц:")
+    """Display folders with names from the dataset."""
+    print("\nList of trusted persons:")
     folders = [item for item in os.listdir(DB_PATH) if os.path.isdir(os.path.join(DB_PATH, item))]
     if folders:
         for folder in folders:
             print(folder)
     else:
-        print("В настоящее время список пуст.")
+        print("The list is currently empty.")
 
 
 def is_valid_folder_name(name: str) -> bool:
-    """Проверка на запрещенку и кириллицу"""
+    """Check for prohibited items and Cyrillic characters."""
     if not name or name.strip() == '':
         return False
     forbidden_chars = re.compile(r'[<>:"/\\|?*а-яА-ЯёЁ\s]')
@@ -27,30 +27,30 @@ def is_valid_folder_name(name: str) -> bool:
 
 
 def photo_session():
-    """Фотосессия"""
+    """Photoshoot"""
 
-    person_name = input("Введи своё имя на английском: ")
-    save_dir = os.path.join(script_dir, 'dataset', person_name)
+    person_name = input("Enter your name in English: ")
+    save_dir = os.path.join(DB_PATH, person_name)
 
     if is_valid_folder_name(person_name):
         os.makedirs(save_dir, exist_ok=True)
     else:
-        print("Ты ввёл имя с недопустимыми символами!")
+        print("You entered a name with invalid characters!")
         return
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
-    # СОЗДАЕМ ОКНО ЗАРАНЕЕ И ВЫТАСКИВАЕМ НА ПЕРЕДНИЙ ПЛАН
+    # Create a window in advance and drag it to the foreground
     cv2.namedWindow("Record", cv2.WINDOW_AUTOSIZE)
     cv2.setWindowProperty("Record", cv2.WND_PROP_TOPMOST, 1)
 
-    # Таймер для интервала между снимками
+    # Timer for the interval between shots
     last_photo_time = time.time()
     photo_interval = 2.5
     photo_count = 0
-    total_photos = 5  # Сколько фоток сделать
+    total_photos = 5  # How many photos to take
 
-    # Флаг для включения вспышки на один кадр
+    # Flag to enable flash for one frame
     flash_active = False
 
     while cap.isOpened():
@@ -58,14 +58,14 @@ def photo_session():
         if not ret:
             break
 
-        # Если сработал флаг вспышки — заливаем экран белым
+        # If the flash flag is triggered, fill the screen with white
         if flash_active:
             display_frame = frame.copy()
-            display_frame.fill(255)  # 255 — белый цвет во всех каналах
-            flash_active = False  # Сразу выключаем, чтобы мигнуло только на 1 кадр
+            display_frame.fill(255)  # 255 — white color in all channels
+            flash_active = False  # Turn it off immediately so that it only flashes for 1 frame
         else:
             display_frame = frame.copy()
-            # Текст на английском, чтобы шрифт OpenCV его отобразил!
+            # Text in English so that the OpenCV font can display it!
             cv2.putText(display_frame, f'LOOK AT THE CAMERA! {photo_count}/{total_photos}', (20, 40),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
@@ -83,14 +83,14 @@ def photo_session():
 
                 photo_path = os.path.join(save_dir, f"face_{photo_count}.jpg")
                 cv2.imwrite(photo_path, face_img)
-                logger.info(f"[DATASET] Сохранено фото: {photo_path}")
+                logger.info(f"[DATASET] Photo saved: {photo_path}")
 
                 photo_count += 1
-                flash_active = True  # Включаем вспышку для следующего кадра
+                flash_active = True  # Turn on the flash for the next shot
 
-        # АВТОВЫХОД: Если набрали нужное количество фото — завершаем сессию
+        # AUTO-EXIT: If we have collected the required number of photos, we end the session
         if photo_count >= total_photos:
-            logger.info(f"\n[DATASET] База для {person_name} успешно создана!")
+            logger.info(f"\n[DATASET] DB for {person_name} has been created successfully!")
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
