@@ -49,7 +49,7 @@ def turret_vision():
 
                     # Aiming point (center of object)
                     target_x = x1 + (x2 - x1) // 2
-                    target_y = y1 + (y2 - y1) // 3  # Целимся в торс
+                    target_y = y1 + (y2 - y1) // 3  # aim for the body (torso)
 
                     # Calculate the distance from the center of the screen to this target (hypotenuse)
                     dist = ((target_x - center_x) ** 2 + (target_y - center_y) ** 2) ** 0.5
@@ -89,10 +89,6 @@ def turret_vision():
                     cv2.imwrite(ALERT_IMG_PATH, frame)  # Save the current frame to disk
                     send_alert_signal()  # Kicking the bot over the network using our new module.
                     alert_sent = True    # Drop the flag
-
-                if abs(error_x) > deadzone:
-                    cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
-                    cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 
                 # Logic for future hardware. The robot aims and issues commands ONLY if there's an intruder
                 if abs(error_x) > deadzone:
