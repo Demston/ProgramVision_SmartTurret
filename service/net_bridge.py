@@ -68,3 +68,18 @@ def send_command_to_turret(command: str):
         logger.warning(f"[NET] Command {command} sent to turret.")
     except Exception as e:
         logger.error(f"[NET] Failed to send command to turret: {e}")
+
+
+def send_angles_to_esp(angle_x: int, angle_y: int, laser_on: int = 0):
+    """Sends calculated YOLO coordinates and laser status directly to the physical ESP32 board via Wi-Fi"""
+    try:
+        # UDP socket without delays
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        # Pack the data into a simple string, for example: "90;120;1"
+        packet = f"{angle_x};{angle_y};{laser_on}".encode('utf-8')
+
+        sock.sendto(packet, (ESP_IP, ESP_PORT))
+        sock.close()
+    except Exception as e:
+        logger.error(f"[NET] Ошибка отправки пакета на ESP32: {e}")
