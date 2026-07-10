@@ -1,6 +1,6 @@
 import socket
 import threading
-from config import LOCALHOST, LISTEN_PORT, TURRET_PORT
+from config import LOCALHOST, LISTEN_PORT, TURRET_PORT, ESP_IP, ESP_PORT
 from service.logger_config import logger, sec_logger
 
 
