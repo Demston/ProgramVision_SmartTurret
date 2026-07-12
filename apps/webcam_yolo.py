@@ -1,11 +1,10 @@
 import cv2
 import time
 from ultralytics import YOLO
-from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH
+from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH, CAMERA_IP
 from service.face_verifier import verify_face_async
-from service.net_bridge import send_alert_signal, start_turret_listener, get_turret_state
 from service.logger_config import logger, sec_logger
-
+from service.net_bridge import send_alert_signal, start_turret_listener, get_turret_state, send_angles_to_esp
 
 # Loading the model (the nano version is the fastest)
 model = YOLO(yolo8n_model)
@@ -14,7 +13,8 @@ model = YOLO(yolo8n_model)
 def turret_vision():
     """The main function of the turret vision"""
 
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)       # Camera index!
+    # cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)    # Default PC-camera
+    cap = cv2.VideoCapture(CAMERA_IP)   # Wi-Fi camera
     # Find the center of the frame
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -26,6 +26,9 @@ def turret_vision():
     unknown_start_time = None
     alert_sent = False
     turret_start_time = time.time()
+
+    current_angle_x = 90
+    current_angle_y = 90
 
     start_turret_listener()   # start a background network listener thread from the module
 
@@ -65,6 +68,26 @@ def turret_vision():
             # Calculating the error (offset from the center of the screen)
             error_x = target_x - center_x
             error_y = target_y - center_y
+
+            # =========== OUR PHYSICAL CONTROL CHANNEL ===========
+            # Smoothness factor (if the motors spin too slowly, increase it to 0.05)
+            k = 0.03
+
+            # If the deviation is greater than the dead zone, we smoothly adjust the angles
+            if abs(error_x) > deadzone:
+                # If the target is on the right (error_x > 0), we need to rotate the turret to the right.
+                # Depending on how you attach the motor, this could be either += or -=.
+                # Let's start with the standard option:
+                current_angle_x += int(error_x * k)
+
+            if abs(error_y) > deadzone:
+                # The Y axis in the camera goes from top to bottom, so we invert the sign here
+                current_angle_y -= int(error_y * k)
+
+            # We clamp the angles into safe 0-180 frames for servos
+            current_angle_x = max(0, min(180, current_angle_x))
+            current_angle_y = max(0, min(180, current_angle_y))
+            # =======================================================
 
             # Invoke an asynchronous check. It runs instantly in the background.
             user_name = verify_face_async(frame, (x1, y1, x2, y2), DB_PATH)
@@ -112,6 +135,8 @@ def turret_vision():
         if turret_net_state == "CHAOS_FIRE":
             # Hard Attack Mode. In the future: send a command to turn on the relay via UDP to the ESP32!
             # In this mode, the turret ignores the deadzone and fires the strobe at full blast.
+            # Full Attack Mode: Helmet tracking angles and turn on the laser (1)
+            send_angles_to_esp(current_angle_x, current_angle_y, laser_on=1)
             cv2.putText(frame, "STATUS: Telegram FIRE ACTIVE!", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
             logger.warning("[TURRET SYSTEM] ATTACK MODE ACTIVE: Simulating 5V supply to the gearbox relay...")
@@ -119,9 +144,22 @@ def turret_vision():
         elif turret_net_state == "ALLOW_GUEST":
             # Remote Trust Mode.
             # In the future: force the turret to reset its motor coordinates to the center (0,0) and stop tracking.
+            # Trust Mode: reset the motors exactly to the center (90, 90) and turn off the laser (0)
+            send_angles_to_esp(90, 90, laser_on=0)
             cv2.putText(frame, "STATUS: GUEST ALLOWED BY USER", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
             logger.warning("[TURRET SYSTEM] TARGET TRUSTED: Targeting commands are blocked remotely.")
+
+        else:
+            # Default GUARD mode:
+            # If there's an Alien in the frame (Red label), we target them, but don't turn on the laser yet (0).
+            # If there's a Friendly One in the frame (Green label), we can either target them or not.
+            # Еhe turret will watch everyone, but the laser will only fire on the FIRE command!
+            if best_target:
+                send_angles_to_esp(current_angle_x, current_angle_y, laser_on=0)
+            else:
+                # If there is no one in the room, keep the guns in the center
+                send_angles_to_esp(90, 90, laser_on=0)
 
         # Static crosshair in the center of the screen
         cv2.drawMarker(frame, (center_x, center_y), (255, 255, 255), cv2.MARKER_CROSS, 20, 2)
@@ -131,3 +169,6 @@ def turret_vision():
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+turret_vision()
