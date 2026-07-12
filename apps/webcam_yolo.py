@@ -133,18 +133,19 @@ def turret_vision():
         turret_net_state = get_turret_state()
 
         if turret_net_state == "CHAOS_FIRE":
-            # Hard Attack Mode. In the future: send a command to turn on the relay via UDP to the ESP32!
+            # Hard Attack Mode.
             # In this mode, the turret ignores the deadzone and fires the strobe at full blast.
-            # Full Attack Mode: Helmet tracking angles and turn on the laser (1)
-            send_angles_to_esp(current_angle_x, current_angle_y, laser_on=1)
-            cv2.putText(frame, "STATUS: Telegram FIRE ACTIVE!", (20, 80),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            # Full Attack Mode: Helmet tracking angles and turn on the laser (laser_on=1)
+            if best_target:
+                send_angles_to_esp(current_angle_x, current_angle_y, laser_on=1)
+            else:
+                # If there is no target, we don’t turn on the laser and stay in the current position.
+                send_angles_to_esp(current_angle_x, current_angle_y, laser_on=0)
             logger.warning("[TURRET SYSTEM] ATTACK MODE ACTIVE: Simulating 5V supply to the gearbox relay...")
 
         elif turret_net_state == "ALLOW_GUEST":
             # Remote Trust Mode.
-            # In the future: force the turret to reset its motor coordinates to the center (0,0) and stop tracking.
-            # Trust Mode: reset the motors exactly to the center (90, 90) and turn off the laser (0)
+            # Trust Mode: reset the motors exactly to the center (90, 90) and turn off the laser (laser_on=0)
             send_angles_to_esp(90, 90, laser_on=0)
             cv2.putText(frame, "STATUS: GUEST ALLOWED BY USER", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
@@ -152,7 +153,7 @@ def turret_vision():
 
         else:
             # Default GUARD mode:
-            # If there's an Alien in the frame (Red label), we target them, but don't turn on the laser yet (0).
+            # If there's an Alien in the frame (Red label), we target them, but don't turn on the laser yet (laser_on=0)
             # If there's a Friendly One in the frame (Green label), we can either target them or not.
             # Еhe turret will watch everyone, but the laser will only fire on the FIRE command!
             if best_target:
@@ -171,4 +172,4 @@ def turret_vision():
     cv2.destroyAllWindows()
 
 
-turret_vision()
+# turret_vision()

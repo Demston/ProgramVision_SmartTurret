@@ -24,7 +24,7 @@ if __name__ == '__main__':
         if command == '1':
             print("\n" + "!" * 70)
             print("• The turret can be turned off by pressing the 'Q' key")
-            print("• The TG bot is launched as a separate process:  python apps/bot_service.py")
+            print("• The TG bot is launched as a separate process:  python -m apps.bot_service")
             print("!" * 70 + "\n")
             turret_vision()
         elif command == '2':
