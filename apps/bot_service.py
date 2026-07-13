@@ -2,6 +2,7 @@ import threading
 import telebot
 from service.bot_handler import network_listener
 from service.logger_config import logger, sec_logger
+from service.net_bridge import send_command_to_turret
 from config import BOT_TOKEN
 
 
@@ -28,7 +29,7 @@ def callback_inline(call):
 
 if __name__ == "__main__":
     # Launch port listening in a separate background thread (so that it does not interfere with the bot's TG polling)
-    net_thread = threading.Thread(target=network_listener(bot), daemon=True)
+    net_thread = threading.Thread(target=network_listener, args=(bot,), daemon=True)
     net_thread.start()
 
     # Launching the TG bot

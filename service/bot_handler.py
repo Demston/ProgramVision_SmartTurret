@@ -12,7 +12,7 @@ def network_listener(our_bot):
 
     bot = our_bot
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind((LOCALHOST, LISTEN_PORT))
+    sock.bind(("0.0.0.0", LISTEN_PORT))  # LOCALHOST
 
     while True:
         try:
