@@ -15,10 +15,12 @@ def turret_vision():
 
     # cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)    # Default PC-camera
     cap = cv2.VideoCapture(CAMERA_IP)   # Wi-Fi camera
-    # Find the center of the frame
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    center_x, center_y = width // 2, height // 2
+
+    # Find the center of the frame. "A" option
+    # width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    # height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    # center_x, center_y = width // 2, height // 2
+
     # "Dead zone" in pixels (to prevent the engine from shaking in the center)
     deadzone = 40
 
@@ -36,6 +38,12 @@ def turret_vision():
         ret, frame = cap.read()
         if not ret:
             break
+
+        frame = cv2.resize(frame, (1280, 720))
+
+        # Find the center of the frame. "B" option
+        width, height = 1280, 720
+        center_x, center_y = width // 2, height // 2
 
         # Basic Magic: one-line recognition and rendering
         results = model.predict(frame, verbose=False, stream=True)
