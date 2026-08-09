@@ -1,13 +1,18 @@
 import cv2
 import time
+import pygame
 from ultralytics import YOLO
-from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH, CAMERA_IP
+from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH, CAMERA_IP, SOUND_PATH
 from service.face_verifier import verify_face_async
 from service.logger_config import logger, sec_logger
 from service.net_bridge import send_alert_signal, start_turret_listener, get_turret_state, send_angles_to_esp
 
 # Loading the model (the nano version is the fastest)
 model = YOLO(yolo8n_model)
+
+pygame.mixer.init()
+# Loading the siren sound
+alarm_sound = pygame.mixer.Sound(SOUND_PATH)
 
 
 def turret_vision():
@@ -27,7 +32,10 @@ def turret_vision():
     # Anti-spam timer
     unknown_start_time = None
     alert_sent = False
+    sound_played = False
+    last_logged_state = None
     turret_start_time = time.time()
+    last_seen_time = time.time()
 
     current_angle_x = 90
     current_angle_y = 90
@@ -109,6 +117,12 @@ def turret_vision():
             else:
                 color = (0, 0, 255)  # Red - Alien
                 label = "UNKNOWN: TARGET LOCKED"
+                last_seen_time = time.time()
+
+                # If the sound hasn't played yet, it means this is the first moment of switching to attack
+                if not sound_played:
+                    alarm_sound.play()
+                    sound_played = True
 
                 # === ALARM TIMER AND NETWORK BRIDGE LOGIC ===
                 if unknown_start_time is None:
@@ -138,6 +152,10 @@ def turret_vision():
             unknown_start_time = None
             alert_sent = False
 
+            # Turn off the sound if the person is out of the frame for more than 2 seconds
+            if time.time() - last_seen_time > 2.0:
+                sound_played = False
+
         turret_net_state = get_turret_state()
 
         if turret_net_state == "CHAOS_FIRE":
@@ -149,7 +167,9 @@ def turret_vision():
             else:
                 # If there is no target, we don’t turn on the laser and stay in the current position.
                 send_angles_to_esp(current_angle_x, current_angle_y, laser_on=0)
-            logger.warning("[TURRET SYSTEM] ATTACK MODE ACTIVE: Simulating 5V supply to the gearbox relay...")
+            if last_logged_state != "CHAOS_FIRE":
+                logger.warning("[TURRET SYSTEM] ATTACK MODE ACTIVE: Simulating 5V supply to the gearbox relay...")
+                last_logged_state = "CHAOS_FIRE"
 
         elif turret_net_state == "ALLOW_GUEST":
             # Remote Trust Mode.
@@ -157,13 +177,16 @@ def turret_vision():
             send_angles_to_esp(90, 90, laser_on=0)
             cv2.putText(frame, "STATUS: GUEST ALLOWED BY USER", (20, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-            logger.warning("[TURRET SYSTEM] TARGET TRUSTED: Targeting commands are blocked remotely.")
+            if last_logged_state != "ALLOW_GUEST":
+                logger.warning("[TURRET SYSTEM] TARGET TRUSTED: Targeting commands are blocked remotely.")
+                last_logged_state = "ALLOW_GUEST"
 
         else:
             # Default GUARD mode:
             # If there's an Alien in the frame (Red label), we target them, but don't turn on the laser yet (laser_on=0)
             # If there's a Friendly One in the frame (Green label), we can either target them or not.
             # Еhe turret will watch everyone, but the laser will only fire on the FIRE command!
+            last_logged_state = "GUARD"
             if best_target:
                 send_angles_to_esp(current_angle_x, current_angle_y, laser_on=0)
             else:
