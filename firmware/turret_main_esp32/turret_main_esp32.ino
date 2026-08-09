@@ -88,20 +88,20 @@ void loop() {
 
       // 8. Pulse control for smart laser
       if (laserOn == 1 && !laser_is_on_now) {
-        // --- ATTACK MODE: HOLD THE BUTTON FOR 2 SECONDS TO TURN ON ---
+        // --- ATTACK MODE: HOLD THE BUTTON FOR ABOUT A SECOND TO TURN ON ---
         pinMode(pinLaser, OUTPUT);
         digitalWrite(pinLaser, LOW);   // We close the relay contacts (press the button)
-        delay(1100);                   // Hold about a second to wake up the laser
+        delay(1100);                   // Hold for about a second to wake up the laser
         pinMode(pinLaser, INPUT);      // Opened the contacts (released the button)
         
         laser_is_on_now = true;        // REMEMBER: The laser is now ON
       } 
       
       else if (laserOn == 0 && laser_is_on_now) {
-        // --- SLEEP MODE: PRESS THE BUTTON FOR 2 SECONDS TO TURN OFF ---
+        // --- SLEEP MODE: PRESS THE BUTTON FOR ABOUT A SECOND TO TURN OFF ---
         pinMode(pinLaser, OUTPUT);
         digitalWrite(pinLaser, LOW);   // Close the relay contacts again (press the button)
-        delay(1100);                   // Hold about a second to turn off the laser
+        delay(1100);                   // Hold for about a second to turn off the laser
         pinMode(pinLaser, INPUT);      // Opened the contacts (released the button)
         
         laser_is_on_now = false;       // Now the laser is completely OFF
