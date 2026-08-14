@@ -100,7 +100,7 @@ def turret_vision():
                 # The Y axis in the camera goes from top to bottom, so we invert the sign here
                 current_angle_y -= int(error_y * k)
 
-            # We clamp the angles into safe 0-180 frames for servos
+            # Clamp the angles into safe 0-180 frames for servos
             current_angle_x = max(0, min(180, current_angle_x))
             current_angle_y = max(0, min(180, current_angle_y))
             # =======================================================
@@ -135,7 +135,7 @@ def turret_vision():
                     send_alert_signal()  # Kicking the bot over the network using our new module.
                     alert_sent = True    # Drop the flag
 
-                # Logic for future hardware. The robot aims and issues commands ONLY if there's an intruder
+                # The robot aims and issues commands ONLY if there's an intruder (Logic for future hardware)
                 if abs(error_x) > deadzone:
                     cmd = f"MOVE {'RIGHT' if error_x > 0 else 'LEFT'} by {abs(error_x)} px"
                     cv2.putText(frame, cmd, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
