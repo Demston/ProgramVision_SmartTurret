@@ -27,7 +27,7 @@ def turret_vision():
     # center_x, center_y = width // 2, height // 2
 
     # "Dead zone" in pixels (to prevent the engine from shaking in the center)
-    deadzone = 40
+    deadzone = 60
 
     # Anti-spam timer
     unknown_start_time = None
@@ -86,24 +86,43 @@ def turret_vision():
             error_y = target_y - center_y
 
             # =========== OUR PHYSICAL CONTROL CHANNEL ===========
-            # Smoothness factor (if the motors spin too slowly, increase it to 0.05)
-            k = 0.03
 
-            # If the deviation is greater than the dead zone, we smoothly adjust the angles
+            # Calculate a smooth dynamic step for the X-axis
+            if abs(error_x) > 200:
+                step_x = 3  # Far away - move faster
+            elif abs(error_x) > 100:
+                step_x = 2  # Closer - slow down
+            else:
+                step_x = 1  # Even closer - 1 degree increments
+
+            # X-axis processing
             if abs(error_x) > deadzone:
-                # If the target is on the right (error_x > 0), we need to rotate the turret to the right.
-                # Depending on how you attach the motor, this could be either += or -=.
-                # Let's start with the standard option:
-                current_angle_x += int(error_x * k)
+                if error_x > 0:
+                    current_angle_x -= step_x
+                else:
+                    current_angle_x += step_x
 
+            # Calculate a smooth dynamic step for the Y-axis
+            if abs(error_y) > 150:
+                step_y = 2  # Far away - move faster
+            else:
+                step_y = 1  # Closer - 1 degree increments to eliminate shaking
+
+            # Y-axis processing
             if abs(error_y) > deadzone:
-                # The Y axis in the camera goes from top to bottom, so we invert the sign here
-                current_angle_y -= int(error_y * k)
+                if error_y > 0:
+                    current_angle_y -= step_y
+                else:
+                    current_angle_y += step_y
+
+            # Return the default dead zone for rest in the center of the frame
+            deadzone = 40
 
             # Clamp the angles into safe 0-180 frames for servos
-            current_angle_x = max(0, min(180, current_angle_x))
-            current_angle_y = max(0, min(180, current_angle_y))
-            # =======================================================
+            current_angle_x = max(15, min(165, current_angle_x))
+            current_angle_y = max(60, min(120, current_angle_y))
+
+            # ===================================================================
 
             # Invoke an asynchronous check. It runs instantly in the background.
             user_name = verify_face_async(frame, (x1, y1, x2, y2), DB_PATH)
@@ -151,6 +170,10 @@ def turret_vision():
             user_name = "UNKNOWN"
             unknown_start_time = None
             alert_sent = False
+
+            # Skip axis errors
+            error_x = 0
+            error_y = 0
 
             # Turn off the sound if the person is out of the frame for more than 2 seconds
             if time.time() - last_seen_time > 2.0:
