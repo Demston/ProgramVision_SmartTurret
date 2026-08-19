@@ -2,7 +2,7 @@ import cv2
 import time
 import pygame
 from ultralytics import YOLO
-from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH, CAMERA_IP, SOUND_PATH
+from config import yolo8n_model, DB_PATH, ALERT_IMG_PATH, CAMERA_IP, SIREN_SOUND_PATH, ATTACK_SOUND_PATH
 from service.face_verifier import verify_face_async
 from service.logger_config import logger, sec_logger
 from service.net_bridge import send_alert_signal, start_turret_listener, get_turret_state, send_angles_to_esp
@@ -12,7 +12,8 @@ model = YOLO(yolo8n_model)
 
 pygame.mixer.init()
 # Loading the siren sound
-alarm_sound = pygame.mixer.Sound(SOUND_PATH)
+alarm_sound = pygame.mixer.Sound(SIREN_SOUND_PATH)
+attack_sound = pygame.mixer.Sound(ATTACK_SOUND_PATH)
 
 
 def turret_vision():
@@ -33,6 +34,7 @@ def turret_vision():
     unknown_start_time = None
     alert_sent = False
     sound_played = False
+    sound_played_combat = False
     last_logged_state = None
     turret_start_time = time.time()
     last_seen_time = time.time()
@@ -187,6 +189,11 @@ def turret_vision():
             # Hard Attack Mode:
             # In this mode, the turret ignores the deadzone and fires the strobe at full blast.
             # Full Attack Mode: Helmet tracking angles and turn on the laser (laser_on=1)
+            if not sound_played_combat:
+                pygame.mixer.stop()         # stop the siren
+                attack_sound.play()         # launch the attack sound once
+                sound_played_combat = True
+                sound_played = True
             if best_target:
                 send_angles_to_esp(current_angle_x, current_angle_y, laser_on=1)
             else:
@@ -205,6 +212,10 @@ def turret_vision():
             if last_logged_state != "ALLOW_GUEST":
                 logger.warning("[TURRET SYSTEM] TARGET TRUSTED: Targeting commands are blocked remotely.")
                 last_logged_state = "ALLOW_GUEST"
+            # Reset all sound flags
+            sound_played = False
+            sound_played_combat = False
+            pygame.mixer.stop()
 
         else:
             # Default GUARD mode:
@@ -212,6 +223,7 @@ def turret_vision():
             # If there's a Friendly One in the frame (Green label), we can either target them or not.
             # Еhe turret will watch everyone, but the laser will only fire on the FIRE command!
             last_logged_state = "GUARD"
+            sound_played_combat = False
             if best_target:
                 send_angles_to_esp(current_angle_x, current_angle_y, laser_on=0)
             else:

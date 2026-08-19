@@ -8,7 +8,8 @@ yolo8n_model = os.path.join(script_dir, "models/yolov8n.pt")                    
 DB_PATH = os.path.join(script_dir, "dataset")                                           # dataset photo path
 ALERTS_DIR = os.path.join(script_dir, "alerts")                                         # strange photo path
 ALERT_IMG_PATH = os.path.normpath(os.path.join(script_dir, "alerts", "alert.jpg"))      # strange photo default name
-SOUND_PATH = os.path.join(script_dir, "media/audio/stop_siren.mp3")                      # siren sound path
+SIREN_SOUND_PATH = os.path.join(script_dir, "media/audio/stop_siren.mp3")               # siren sound path
+ATTACK_SOUND_PATH = os.path.join(script_dir, "media/audio/attack_sound.mp3")            # attack sound path
 
 # === PATHS TO LOGS ===
 LOGS_DIR = os.path.join(script_dir, "logs")
