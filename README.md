@@ -34,7 +34,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 * **`turret_main_esp32/`**: Controls dual high-torque MG996R metal-gear servos for high-speed panning and tilting. It operates a 5V electromagnetic relay (Low Level Trigger) to control a tactical laser unit. 
 * **Hardware-Level Bugfix:** To resolve hardware-level logic conflicts between the 3.3V ESP32 GPIO pins and the 5V relay module without physical level shifters, a custom dynamic pin configuration trick was implemented. The MCU swaps modes on-the-fly (`pinMode(INPUT/OUTPUT)`) combined with precise 1.1-second button hold emulations (`delay(1100)`), preventing network UDP buffer overflows caused by servo PWM timer interrupts.
 * **`turret_camera_esp32/`**: Manages the independent ESP32-CAM video server. The OV2640 sensor configuration is hardware-locked to crisp HD resolution (`FRAMESIZE_HD` / 1280x720) directly at the EEPROM initialization layer, completely eliminating video stutter and automatic downgrades to VGA mode.
-* **Atmospheric UI Feedback:** Integrated a multithreaded `pygame.mixer` audio engine that plays an alert chime "ui-ui!" strictly once upon intruder detection, operating entirely in a non-blocking background OS thread.
+* **Atmospheric UI Feedback:** Integrated a multithreaded `pygame.mixer` audio engine that plays an alert / attack sound upon intruder detection, operating entirely in a non-blocking background OS thread.
 
 ### 🚀 Getting Started
 
@@ -100,7 +100,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 * **`turret_main_esp32/`**: Управляет двумя мощными сервоприводами MG996R с металлическим редуктором для скоростного наведения по осям X и Y. Через 5-вольтовый модуль электромагнитного реле (Low Level Trigger) коммутирует тактический лазерный целеуказатель.
 * **Аппаратный хак уровней логики:** Для решения проблемы несовместимости логических уровней (3.3В у GPIO ESP32 против 5В у реле) без использования физических конвертеров, применен алгоритм динамической смены конфигурации пина «на лету» (`pinMode(INPUT/OUTPUT)`). В сочетании с выверенным временем удержания кнопки умного лазера в 1.1 секунды (`delay(1100)`), это полностью исключило забивание сетевого UDP-буфера ШИМ-прерываниями моторов.
 * **`turret_camera_esp32/`**: Отвечает за автономный видеосервер ESP32-CAM. Конфигурация матрицы OV2640 жестко зафиксирована на уровне инициализации EEPROM в режиме честного HD (`FRAMESIZE_HD` / 1280x720), что убрало просадки фреймрейта и произвольные сбросы камеры в мыльный VGA-режим.
-* **Атмосферное аудио-сопровождение:** Внедрен многопоточный звуковой движок `pygame.mixer`, воспроизводящий сирену в стиле «УИ-УИ!» строго один раз при первичной фиксации «Чужого», работающий в изолированном фоновом потоке ОС без микрофризов нейросети.
+* **Атмосферное аудио-сопровождение:** Внедрен многопоточный звуковой движок `pygame.mixer`, воспроизводящий сирену / звук атаки при фиксации «Чужого», работающий в изолированном фоновом потоке ОС без микрофризов нейросети.
 
 ### 🚀 Быстрый запуск
 
