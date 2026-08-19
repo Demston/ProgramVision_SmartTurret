@@ -68,7 +68,7 @@ def turret_vision():
 
                     # Aiming point (center of object)
                     target_x = x1 + (x2 - x1) // 2
-                    target_y = y1 + (y2 - y1) // 3  # aim for the body (torso)
+                    target_y = y1 + (y2 - y1) // 2  # aim for the body (torso)
 
                     # Calculate the distance from the center of the screen to this target (hypotenuse)
                     dist = ((target_x - center_x) ** 2 + (target_y - center_y) ** 2) ** 0.5
@@ -175,14 +175,16 @@ def turret_vision():
             error_x = 0
             error_y = 0
 
-            # Turn off the sound if the person is out of the frame for more than 2 seconds
-            if time.time() - last_seen_time > 2.0:
-                sound_played = False
+            # Auto return to the center after timeout if the person is out of the frame for more than few seconds
+            if time.time() - last_seen_time > 3.0:
+                current_angle_x = 90
+                current_angle_y = 90
+                sound_played = False  # skip the siren
 
         turret_net_state = get_turret_state()
 
         if turret_net_state == "CHAOS_FIRE":
-            # Hard Attack Mode.
+            # Hard Attack Mode:
             # In this mode, the turret ignores the deadzone and fires the strobe at full blast.
             # Full Attack Mode: Helmet tracking angles and turn on the laser (laser_on=1)
             if best_target:
@@ -195,7 +197,7 @@ def turret_vision():
                 last_logged_state = "CHAOS_FIRE"
 
         elif turret_net_state == "ALLOW_GUEST":
-            # Remote Trust Mode.
+            # Remote Trust Mode:
             # Trust Mode: reset the motors exactly to the center (90, 90) and turn off the laser (laser_on=0)
             send_angles_to_esp(90, 90, laser_on=0)
             cv2.putText(frame, "STATUS: GUEST ALLOWED BY USER", (20, 80),
@@ -221,6 +223,11 @@ def turret_vision():
         cv2.imshow("Auto AIM", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+    # Parking the motors before shutting them down
+    print("[SYSTEM] Parking turret axes to safe home position (90, 90)...")
+    send_angles_to_esp(90, 90, laser_on=0)
+    time.sleep(0.5)  # give the motors 0.5 second to reach the center
 
     cap.release()
     cv2.destroyAllWindows()
