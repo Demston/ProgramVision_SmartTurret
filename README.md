@@ -140,6 +140,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 ---
 
 <div align="center">
+
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto%20AIM%2003.06.2026%2020_26_26.png" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/IMG_20260603_202952.jpg" width="320"/>
@@ -147,7 +148,6 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260808_174415.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260813_173017.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260813_232643.jpg" width="360"/>
-
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_232352.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_235427.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_235447.jpg" width="360"/>
