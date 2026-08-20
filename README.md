@@ -155,7 +155,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_200350.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_201004.jpg" width="360"/>
 <img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_215302.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/Auto_AIM_2026-08-20_21-30-04_1.png" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/Auto_AIM_2026-08-20_21-30-04_2.png" width="360"/>
+<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto_AIM_2026-08-20_21-30-04_1.png" width="360"/>
+<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto_AIM_2026-08-20_21-30-04_2.png" width="360"/>
 
 </div>
