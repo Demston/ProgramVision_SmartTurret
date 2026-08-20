@@ -70,7 +70,7 @@ def turret_vision():
 
                     # Aiming point (center of object)
                     target_x = x1 + (x2 - x1) // 2
-                    target_y = y1 + (y2 - y1) // 2  # aim for the body (torso)
+                    target_y = y1 + (y2 - y1) // 3  # 2 or 3 - aim for the body (torso)
 
                     # Calculate the distance from the center of the screen to this target (hypotenuse)
                     dist = ((target_x - center_x) ** 2 + (target_y - center_y) ** 2) ** 0.5
