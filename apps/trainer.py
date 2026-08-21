@@ -2,6 +2,7 @@ import re
 import os
 import cv2
 import time
+import glob
 from deepface import DeepFace
 from config import DB_PATH
 from service.logger_config import logger, sec_logger
@@ -91,6 +92,17 @@ def photo_session():
         # AUTO-EXIT: If we have collected the required number of photos, we end the session
         if photo_count >= total_photos:
             logger.info(f"\n[DATASET] DB for {person_name} has been created successfully!")
+
+            # Delete previous pkl-file
+            cache_pattern = os.path.join(DB_PATH, "ds_model_vggface*.pkl")
+            found_caches = glob.glob(cache_pattern)
+            for cache_file in found_caches:
+                try:
+                    os.remove(cache_file)
+                    print(f"[DATASET] Successfully auto-deleted old cache: {os.path.basename(cache_file)}")
+                except Exception as e:
+                    print(f"[DATASET] Error auto-deleting cache: {e}")
+
             break
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
