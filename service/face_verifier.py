@@ -17,7 +17,7 @@ def _async_worker(person_crop, db_path):
     try:
         # Launch verification. Enforce_detection=False will prevent falls if your face is blurred
         dfs = DeepFace.find(img_path=person_crop, db_path=db_path,
-                            enforce_detection=False, silent=True)
+                            enforce_detection=False, silent=True, threshold=0.40)
         match_name = "UNKNOWN"
 
         # Check that the list returned is not empty.

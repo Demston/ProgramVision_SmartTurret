@@ -141,7 +141,7 @@ def turret_vision():
                 last_seen_time = time.time()
 
                 # Check that more than few seconds have passed since the target was captured
-                if unknown_start_time is not None and (time.time() - unknown_start_time > 2.0):
+                if unknown_start_time is not None and (time.time() - unknown_start_time > 3.0):
                     if not sound_played:
                         alarm_sound.play()  # alert sound after few seconds
                         sound_played = True

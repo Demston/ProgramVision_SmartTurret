@@ -48,7 +48,7 @@ def photo_session():
     last_photo_time = time.time()
     photo_interval = 2.5
     photo_count = 0
-    total_photos = 10  # How many photos to take
+    total_photos = 8  # How many photos to take
 
     # Flag to enable flash for one frame
     flash_active = False
