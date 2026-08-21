@@ -1,6 +1,6 @@
 # 🤖 Perimeter Security System: "Smart Turret" Core
 
-[ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru)
+[ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru) | [MEDIA](#media)
 
 ---
 
@@ -135,9 +135,11 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
      ```
 
 ---
-## SCREENSHOTS, PHOTOS, VIDEOS
+## MEDIA
 
 ---
+
+**Screenshots, Photos, Videos**
 
 <div align="center">
 
