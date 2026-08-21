@@ -140,6 +140,12 @@ def turret_vision():
                 label = "UNKNOWN: TARGET LOCKED"
                 last_seen_time = time.time()
 
+                # Check that more than few seconds have passed since the target was captured
+                if unknown_start_time is not None and (time.time() - unknown_start_time > 2.0):
+                    if not sound_played:
+                        alarm_sound.play()  # alert sound after few seconds
+                        sound_played = True
+
                 # If the sound hasn't played yet, it means this is the first moment of switching to attack
                 if not sound_played:
                     alarm_sound.play()
