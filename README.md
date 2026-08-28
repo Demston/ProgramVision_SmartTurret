@@ -140,23 +140,25 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 
 <div align="center">
 
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto%20AIM%2003.06.2026%2020_26_26.png" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/IMG_20260603_202952.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/IMG_20260810_231252.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260706_235200.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260709_000518.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260808_174415.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260813_173017.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260813_232644.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_232352.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_235427.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260819_235447.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_195428.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_200350.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_201004.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/photo/IMG_20260820_215302.jpg" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto_AIM_2026-08-20_21-30-04_2.png" width="360"/>
-<img src="https://github.com/Demston/ProgramVision_SmartTurret/blob/main/media/screenshots/Auto_AIM_2026-08-20_21-30-04_1.png" width="360"/>
+🎞 **[DOWNLOAD VIDEO](https://raw.githubusercontent.com/Demston/ProgramVision_SmartTurret/main/media/Smart_Turret_Presentation_LQ.mp4)** *(MP4, 100 МБ)*
+
+<img src="media/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="360"/>
+<img src="media/screenshots/Auto%20AIM%2003.06.2026%2020_26_26.png" width="360"/>
+<img src="media/screenshots/IMG_20260603_202952.jpg" width="360"/>
+<img src="media/screenshots/IMG_20260810_231252.jpg" width="360"/>
+<img src="media/photo/IMG_20260706_235200.jpg" width="360"/>
+<img src="media/photo/IMG_20260709_000518.jpg" width="360"/>
+<img src="media/photo/IMG_20260808_174415.jpg" width="360"/>
+<img src="media/photo/IMG_20260813_173017.jpg" width="360"/>
+<img src="media/photo/IMG_20260813_232644.jpg" width="360"/>
+<img src="media/photo/IMG_20260819_232352.jpg" width="360"/>
+<img src="media/photo/IMG_20260819_235427.jpg" width="360"/>
+<img src="media/photo/IMG_20260819_235447.jpg" width="360"/>
+<img src="media/photo/IMG_20260820_195428.jpg" width="360"/>
+<img src="media/photo/IMG_20260820_200350.jpg" width="360"/>
+<img src="media/photo/IMG_20260820_201004.jpg" width="360"/>
+<img src="media/photo/IMG_20260820_215302.jpg" width="360"/>
+<img src="media/screenshots/Auto_AIM_2026-08-20_21-30-04_2.png" width="360"/>
+<img src="media/screenshots/Auto_AIM_2026-08-20_21-30-04_1.png" width="360"/>
 
 </div>
