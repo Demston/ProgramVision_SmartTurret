@@ -140,8 +140,11 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 
 <div align="center">
 
+<br>
+
 🎞 **[DOWNLOAD VIDEO PRESENTATION](https://raw.githubusercontent.com/Demston/ProgramVision_SmartTurret/main/media/video/Smart_Turret_Presentation_LQ.mp4)** *(MP4, 100 МБ)*
-<br><br>
+
+<br>
 
 <div align="center">
   <a href="https://youtu.be/OIyxzSvCyCk" target="_blank">
@@ -150,7 +153,8 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 </div>
 
 Watch on YouTube in high quality with English subtitles
-<br><br>
+
+<br>
 
 ---
 
