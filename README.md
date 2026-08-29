@@ -142,12 +142,17 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 
 🎞 **[DOWNLOAD VIDEO PRESENTATION](https://raw.githubusercontent.com/Demston/ProgramVision_SmartTurret/main/media/video/Smart_Turret_Presentation_LQ.mp4)** *(MP4, 100 МБ)*
 
-[![Watch on YouTube in FHD with English subtitles](https://youtu.be/OIyxzSvCyCk)](https://youtu.be/OIyxzSvCyCk)
+<div align="center">
+  <a href="https://youtu.be/OIyxzSvCyCk" target="_blank">
+    <img src="media/video/youtube_preview.png" width="600" alt="Watch on YouTube"/>
+  </a>
+</div>
+
 
 ---
 
-<img src="media/screenshots/Auto%20AIM%2003.06.2026%2020_25_34.png" width="360"/>
-<img src="media/screenshots/Auto%20AIM%2003.06.2026%2020_26_26.png" width="360"/>
+<img src="media/screenshots/Auto_AIM_03062026_202534.png" width="360"/>
+<img src="media/screenshots/Auto_AIM_03062026_202626.png" width="360"/>
 <img src="media/screenshots/IMG_20260603_202952.jpg" width="360"/>
 <img src="media/screenshots/IMG_20260810_231252.jpg" width="360"/>
 <img src="media/photo/IMG_20260706_235200.jpg" width="360"/>
