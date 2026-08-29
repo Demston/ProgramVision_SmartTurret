@@ -148,7 +148,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
   </a>
 </div>
 
-*Watch on YouTube in high quality with English subtitles*
+**Watch on YouTube in high quality with English subtitles**
 <br><br>
 
 ---
