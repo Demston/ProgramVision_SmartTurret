@@ -169,7 +169,7 @@ Watch on YouTube in high quality with English subtitles
 <img src="media/photo/IMG_20260813_232644.jpg" width="360"/>
 <img src="media/photo/IMG_20260819_232352.jpg" width="360"/>
 <img src="media/photo/IMG_20260819_235427.jpg" width="360"/>
-<img src="media/photo/IMG_20260819_235447.jpg" width="360"/>
+<img src="media/photo/IMG_20260819_235448.jpg" width="360"/>
 <img src="media/photo/IMG_20260820_195428.jpg" width="360"/>
 <img src="media/photo/IMG_20260820_200350.jpg" width="360"/>
 <img src="media/photo/IMG_20260820_201004.jpg" width="360"/>
