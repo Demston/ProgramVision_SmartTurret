@@ -25,7 +25,7 @@ def _async_worker(person_crop, db_path):
             df = dfs[0]  # Take the first data frame from the list of results
             if not df.empty:  # Check if there is at least one line with a match
                 matched_file_path = df['identity'].values[0]  # Extract the path to the first matching photo from the DB
-                # The magic of os.path: we take the name of the folder in which this file is located
+                # Take the name of the folder in which this file is located
                 match_name = os.path.basename(os.path.dirname(matched_file_path))
 
         with lock:
