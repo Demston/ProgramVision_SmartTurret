@@ -142,14 +142,10 @@ def turret_vision():
 
                 # Check that more than few seconds have passed since the target was captured
                 if unknown_start_time is not None and (time.time() - unknown_start_time > 3.0):
+                    # If the sound hasn't played yet, it means this is the first moment of switching to attack
                     if not sound_played:
                         alarm_sound.play()  # alert sound after few seconds
                         sound_played = True
-
-                # If the sound hasn't played yet, it means this is the first moment of switching to attack
-                if not sound_played:
-                    alarm_sound.play()
-                    sound_played = True
 
                 # === ALARM TIMER AND NETWORK BRIDGE LOGIC ===
                 if unknown_start_time is None:
