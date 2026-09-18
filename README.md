@@ -147,7 +147,7 @@ The physical execution mechanism is managed by an ESP32 micro-controller ecosyst
 <br>
 
 <div align="center">
-  <a href="https://youtu.be/OIyxzSvCyCk" target="_blank">
+  <a href="https://youtu.be/IsMzVH0KzV4" target="_blank">
     <img src="media/video/youtube_preview.jpg" width="600" alt="Watch on YouTube"/>
   </a>
 </div>
